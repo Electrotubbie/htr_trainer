@@ -38,9 +38,7 @@ python3.11 --version
 
 # --------- PROJECT STRUCTURE ----------
 echo "=== Создание структуры проекта ==="
-mkdir -p $HOME/projects
 
-git clone https://github.com/Electrotubbie/htr_trainer.git
 PROJECT_DIR=$HOME/projects/htr_trainer
 
 mkdir -p $PROJECT_DIR/logs
