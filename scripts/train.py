@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+import numpy as np
+import random
 
 import torch
 from torch.utils.data import DataLoader
@@ -13,6 +15,11 @@ from scripts.train_funcs import (
     HTRDataset,
     run_experiment,
 )
+
+def seed_worker(worker_id):
+    worker_seed = torch.initial_seed() % 2**32
+    np.random.seed(worker_seed)
+    random.seed(worker_seed)
 
 def main():
     args = parse_args()
@@ -46,7 +53,18 @@ def main():
     test = HTRDataset(root_dir=SLICE_DATASET_DIR, df=test_df, processor=processor)
     debug = HTRDataset(root_dir=SLICE_DATASET_DIR, df=train_df.head(10), processor=processor)
 
-    train_dataloader = DataLoader(train, batch_size=BATCH_SIZE, shuffle=True, pin_memory=(DEVICE.type=="cuda"), num_workers=WORKERS)
+    g = torch.Generator()
+    g.manual_seed(2025)
+
+    train_dataloader = DataLoader(
+        train, 
+        batch_size=BATCH_SIZE, 
+        shuffle=True, 
+        pin_memory=(DEVICE.type=="cuda"), 
+        num_workers=WORKERS, 
+        worker_init_fn=seed_worker,
+        generator=g,
+    )
     val_dataloader = DataLoader(val, batch_size=EVAL_BATCH_SIZE, pin_memory=(DEVICE.type=="cuda"), num_workers=WORKERS)
     test_dataloader = DataLoader(test, batch_size=EVAL_BATCH_SIZE, pin_memory=(DEVICE.type=="cuda"), num_workers=WORKERS)
     debug_dataloader = DataLoader(debug, batch_size=EVAL_BATCH_SIZE, pin_memory=(DEVICE.type=="cuda"), num_workers=WORKERS)
