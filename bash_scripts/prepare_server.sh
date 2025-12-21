@@ -7,21 +7,21 @@ echo " Python 3.11 + venv + PyTorch CUDA     "
 echo "========================================"
 
 # --------- SYSTEM UPDATE ----------
-echo "=== Обновление системы ==="
-sudo apt update && sudo apt upgrade -y
+# echo "=== Обновление системы ==="
+# sudo apt update && sudo apt upgrade -y
 
 # --------- BASE PACKAGES ----------
-echo "=== Установка базовых пакетов ==="
-sudo apt install -y \
-    software-properties-common \
-    build-essential \
-    git \
-    curl \
-    wget \
-    unzip \
-    htop \
-    tmux \
-    ca-certificates
+# echo "=== Установка базовых пакетов ==="
+# sudo apt install -y \
+#     software-properties-common \
+#     build-essential \
+#     git \
+#     curl \
+#     wget \
+#     unzip \
+#     htop \
+#     tmux \
+#     ca-certificates
 
 # --------- PYTHON 3.11 ----------
 echo "=== Установка Python 3.11 ==="

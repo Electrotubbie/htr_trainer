@@ -1,4 +1,5 @@
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import pandas as pd
 import numpy as np
 import random
@@ -30,7 +31,8 @@ def main():
     BATCH_SIZE = args.batch_size
     EVAL_BATCH_SIZE = args.eval_batch_size
     WORKERS = 0
-    DEVICE = torch.DEVICE("cuda" if torch.cuda.is_available() else "cpu")
+    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(DEVICE)
 
     os.makedirs(EXPERIMENTS_DIR, exist_ok=True)
 
@@ -72,6 +74,7 @@ def main():
     run_experiment(
         model=model,
         processor=processor,
+        experiments_dir=EXPERIMENTS_DIR,
         train_loader=train_dataloader,
         val_loader=val_dataloader,
         debug_loader=debug_dataloader,
@@ -79,6 +82,7 @@ def main():
         epochs=args.epochs,
         freeze_encoder=args.freeze_encoder,
         freeze_decoder=args.freeze_decoder,
+        eval_train=args.eval_train,
         device=DEVICE,
         debug=False,
     )

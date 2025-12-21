@@ -54,6 +54,12 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--eval-train",
+        action="store_true",
+        help="eval train flag"
+    )
+
+    parser.add_argument(
         "--learning-rate",
         type=float,
         default=5e-6,

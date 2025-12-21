@@ -19,15 +19,12 @@ class HTRDataset(Dataset):
         self.df = df
         self.processor = processor
         self.max_target_length = max_target_length
-        # self.cache = [None for _ in range(len(df))]
 
     def __len__(self):
         return len(self.df)
 
     def __getitem__(self, idx):
         # get file name + text
-        # if self.cache[idx]:
-        #     return self.cache[idx]
         file_name = self.df['file_name'][idx]
         text = self.df['text'][idx]
         # prepare image (i.e. resize + normalize)
@@ -89,11 +86,13 @@ def compute_cer(preds, labels):
 
 def train_epoch(
     model, 
+    processor,
     loader, 
     optimizer, 
     scheduler, 
     device, 
-    scaler=None
+    scaler=None,
+    eval_train=False,
 ):
     model.train()
     train_cer = 0.0
@@ -130,7 +129,10 @@ def train_epoch(
         tokens_cnt += batch_tokens_cnt
     train_loss = train_loss / tokens_cnt
 
-    print(f"{'Train':10} Loss: {round(train_loss, 5):15}")#CER: {train_cer:20}")
+    if eval_train:
+        _, train_cer = eval_epoch(model, processor, loader, device)
+
+    print(f"{'Train':10} Loss: {round(train_loss, 5):15} CER: {train_cer:20}")
 
     return train_loss, train_cer
 
@@ -192,8 +194,9 @@ def run_experiment(
     val_loader,
     lr=5e-5,
     epochs=30,
-    freeze_encoder=True,
-    freeze_decoder=True,
+    freeze_encoder=False,
+    freeze_decoder=False,
+    eval_train=False,
     device=None,
     debug=False,
     debug_loader=None
@@ -239,7 +242,7 @@ def run_experiment(
     history = {
         "epoch": [],
         "train_loss": [],
-        # "train_metric": [],
+        "train_metric": [],
         "val_loss": [],
         "val_metric": [],
         "lr": [],
@@ -248,13 +251,15 @@ def run_experiment(
     best_cer = 1
     for epoch in range(1, epochs + 1):
         
-        train_loss, _ = train_epoch(
+        train_loss, train_metric = train_epoch(
             model=model,
+            processor=processor,
             loader=train_loader,
             optimizer=optimizer,
             scheduler=scheduler,
             device=device,
             scaler=scaler,
+            eval_train=eval_train,
         )
         
         val_loss, val_metric = eval_epoch(
@@ -268,20 +273,20 @@ def run_experiment(
 
         history["train_loss"].append(train_loss)
         history["val_loss"].append(val_loss)
-        # history["train_metric"].append(train_metric)
+        history["train_metric"].append(train_metric)
         history["val_metric"].append(val_metric)
         history["epoch"].append(epoch)
         history["lr"].append(current_lr)
         
 
         print(f"Epoch {epoch:02d} | "
-              f"Train loss {train_loss:.4f} | " # CER {train_metric:.4f}
+              f"Train loss {train_loss:.4f} CER {train_metric:.4f} | "
               f"Val loss {val_loss:.4f} CER {val_metric:.4f} | "
               f"lr {current_lr:.2e}"
         )
         print()
         # model_save_path = os.path.join(experiment_dir, f"model_epoch_{epoch}.pt")
-        
+
         if val_metric < best_cer and not debug:
             best_model_save_path = os.path.join(experiment_dir, f"best_model.pt")
             best_cer = val_metric
