@@ -9,7 +9,7 @@ source venv/bin/activate
 export CUDA_VISIBLE_DEVICES=0
 export PYTHONUNBUFFERED=1
 
-python3 ./scripts/train.py \
+python3 ./train.py \
     --epochs 20 \
     --batch-size 6 \
     --eval-batch-size 2
