@@ -85,10 +85,10 @@ pip install gdown
 echo "=== DOWNLOADING samples.csv ==="
 gdown 1R_ZuM_AalY-PrJvt75vypkdIjChWQ_Bt
 
-echo "=== DOWNLOADING DATASET ==="
-gdown 18RIxWgGA-C0IQkn8d87iYS1bUt9LeX-b
-rm -rf dataset_slice
-unzip -qq dataset_slice.zip -d dataset_slice
+# echo "=== DOWNLOADING DATASET ==="
+# gdown 18RIxWgGA-C0IQkn8d87iYS1bUt9LeX-b
+# rm -rf dataset_slice
+# unzip -qq dataset_slice.zip -d dataset_slice
 
 echo "=== DOWNLOADING SOURCE MODEL ==="
 gdown 1VdSY1nxxzzhgzAvat2H0puljspZV8-WQ

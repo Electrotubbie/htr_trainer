@@ -43,7 +43,7 @@ def main():
     model.loss_function
     model.loss_function = ForCausalLMLoss_fixed
 
-    dataset_df = pd.read_csv('samples.csv')
+    dataset_df = pd.read_csv(os.path.join(SLICE_DATASET_DIR, 'samples.csv'))
     print('Объём датасета:', len(dataset_df))
 
     train_df = dataset_df[dataset_df['sample'] == 'train'].reset_index(drop=True)
